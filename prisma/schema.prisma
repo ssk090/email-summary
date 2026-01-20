@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  geminiApiKey  String?   // Encrypted with ENCRYPTION_KEY
+  accessToken   String?   // Google OAuth access token
+  refreshToken  String?   // Google OAuth refresh token
+  tokenExpiry   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  summaries     Summary[]
+}
+
+model Summary {
+  id          String   @id @default(cuid())
+  userId      String
+  emailId     String   @unique  // Gmail message ID
+  subject     String
+  from        String
+  snippet     String?
+  summary     String
+  company     String?
+  deadline    String?
+  jobRole     String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
