@@ -74,7 +74,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return token;
         },
         async session({ session, token }) {
-            // Add user ID and access token to session
             if (session.user?.email) {
                 try {
                     const dbUser = await prisma.user.findUnique({
@@ -82,7 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     });
                     if (dbUser) {
                         session.user.id = dbUser.id;
-                        session.accessToken = token.accessToken as string;
+                        session.accessToken = (token.accessToken as string) || dbUser.accessToken || undefined;
                     }
                 } catch (error) {
                     console.error("Session Callback - Database Error:", error);
