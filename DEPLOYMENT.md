@@ -27,7 +27,11 @@ This guide will walk you through deploying your email-summary app to Vercel and 
    - **Output Directory**: `.next` (default)
    - **Install Command**: `npm install` or `pnpm install` (depending on your package manager)
 
-5. **Click "Deploy"** (we'll add environment variables in the next step)
+5. **⚠️ IMPORTANT: Before clicking "Deploy", add environment variables first!**
+   - Click "Environment Variables" in the project settings
+   - Add `DATABASE_URL` (required for build to succeed)
+   - You can add other variables later, but `DATABASE_URL` is critical
+   - Then click "Deploy"
 
 ### Option B: Deploy via Vercel CLI
 
@@ -54,7 +58,13 @@ vercel
 
 ## Step 2: Configure Environment Variables in Vercel
 
-After your first deployment, you need to add environment variables:
+**⚠️ CRITICAL: Add `DATABASE_URL` BEFORE your first deployment, or the build will fail!**
+
+You can add environment variables either:
+- **Before deployment** (recommended): In project settings before clicking "Deploy"
+- **After deployment**: In Settings → Environment Variables (then redeploy)
+
+Add the following variables:
 
 1. **Go to your project in Vercel Dashboard**
 2. **Click "Settings" → "Environment Variables"**
@@ -192,12 +202,15 @@ If you want to use a custom domain:
 - Check if your Neon database allows connections from Vercel IPs (should work by default)
 - Ensure you're using the pooler endpoint for Neon (recommended for serverless)
 
-### Issue: Build fails with Prisma errors
+### Issue: Build fails with Prisma errors - "Environment variable not found: DATABASE_URL"
 
 **Solution:**
-- Ensure `prisma generate` runs before `next build`
-- Check that `DATABASE_URL` is available during build (it should be)
-- Verify Prisma schema is correct
+- **This is the most common issue!** `DATABASE_URL` must be set in Vercel BEFORE the build runs
+- Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+- Add `DATABASE_URL` with your Neon PostgreSQL connection string
+- **IMPORTANT**: Select "Production, Preview, Development" for the environment
+- After adding, redeploy your project
+- If you're using the default build command, ensure `vercel-build` script is set correctly
 
 ### Issue: Environment variables not working
 
